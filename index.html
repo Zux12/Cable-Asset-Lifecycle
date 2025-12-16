@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cable Lifecycle Calculator | IEC & IEEE Standards</title>
+    <title>Advanced Cable Lifecycle Calculator | O&G Plant Edition</title>
     <style>
         /* SCIENTIFIC / LABORATORY THEME */
         :root {
@@ -92,7 +92,7 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 1rem;
-            box-sizing: border-box; /* Fix padding issues */
+            box-sizing: border-box; 
         }
 
         .helper-text {
@@ -170,8 +170,8 @@
 <body>
 
 <div class="container">
-    <h1>Cable Asset Lifecycle Calculator</h1>
-    <p>Based on IEC 60216 (Thermal), IEEE 400.2 (Moisture), and IEC 60270 (PD) Standards.</p>
+    <h1>Cable Lifecycle Calculator (O&G Edition)</h1>
+    <p>Based on IEC 60216, IEEE 400.2, IEC 60270, and NEK 606 Standards.</p>
 
     <div class="note">
         <strong>Calculation Mode:</strong>
@@ -185,7 +185,7 @@
                 <span>Optimistic (Standard Planning)</span>
             </label>
         </div>
-        <small><em>Note: "Conservative" assumes faster degradation rates. "Optimistic" assumes standard industry survival curves.</em></small>
+        <small><em>Note: "Conservative" assumes faster degradation rates in harsh O&G environments.</em></small>
     </div>
 
     <form id="calcForm">
@@ -194,12 +194,12 @@
             <div class="form-group">
                 <label>Current Age (Years)</label>
                 <input type="number" id="age" value="30" oninput="calculateRUL()">
-                <span class="helper-text">Default: 30 Years (Matches your 110VDC Scenario).</span>
+                <span class="helper-text">Default: 30 Years (Matches 110VDC Scenario).</span>
             </div>
             <div class="form-group">
                 <label>Design Life (Years)</label>
                 <input type="number" id="designLife" value="40" oninput="calculateRUL()">
-                <span class="helper-text">Standard industry design life for XLPE/PVC.</span>
+                <span class="helper-text">Standard design life (XLPE/PVC).</span>
             </div>
         </div>
 
@@ -217,7 +217,7 @@
             </div>
         </div>
 
-        <h2>3. Practical Degradation Factors</h2>
+        <h2>3. Condition Factors (Diagnostics)</h2>
         <div class="input-grid">
             <div class="form-group">
                 <label>Moisture Environment (IEEE 400.2)</label>
@@ -236,14 +236,6 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>Mechanical / External Risk (DNV-RP-0360)</label>
-                <select id="mech" onchange="calculateRUL()">
-                    <option value="protected">Protected (Duct/Tray)</option>
-                    <option value="buried" selected>Direct Buried (Standard)</option>
-                    <option value="exposed">High Excavation Area / Exposed</option>
-                </select>
-            </div>
-            <div class="form-group">
                 <label>Accessory Condition (IEC 60502)</label>
                 <select id="acc" onchange="calculateRUL()">
                     <option value="good" selected>Good / New</option>
@@ -252,6 +244,34 @@
                 </select>
             </div>
         </div>
+
+        <h2>4. O&G Environmental Factors (NEK 606/IEC 60811)</h2>
+        <div class="input-grid">
+            <div class="form-group">
+                <label>Chemical / Hydrocarbon Exposure (NEK 606)</label>
+                <select id="chemical" onchange="calculateRUL()">
+                    <option value="none" selected>None (Clean Soil/Tray)</option>
+                    <option value="splash">Occasional Splash / Fumes</option>
+                    <option value="immersion">Oil/Sludge Immersion (High Swelling Risk)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>UV / Solar Radiation (IEC 60068)</label>
+                <select id="uv" onchange="calculateRUL()">
+                    <option value="shaded" selected>Buried or Shaded (No UV)</option>
+                    <option value="exposed_res">Exposed (UV Resistant Jacket)</option>
+                    <option value="exposed_std">Exposed (Standard Jacket - Cracking Risk)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Grid Events / Short Circuits (IEC 60949)</label>
+                <select id="grid" onchange="calculateRUL()">
+                    <option value="stable" selected>Stable Supply (Few Trips)</option>
+                    <option value="frequent">Frequent Trips / Faults (Thermal Shock)</option>
+                </select>
+            </div>
+        </div>
+
     </form>
 
     <div class="result-box">
@@ -269,7 +289,7 @@
             </div>
             <div class="legend">
                 <span><span class="dot" style="background-color: #555;"></span>Age Consumed</span>
-                <span><span class="dot" style="background-color: #dc3545;"></span>Degradation Penalty</span>
+                <span><span class="dot" style="background-color: #dc3545;"></span>Total Penalty</span>
                 <span><span class="dot" style="background-color: #28a745;"></span>Remaining Life</span>
             </div>
         </div>
@@ -286,57 +306,57 @@
         const rating = parseFloat(document.getElementById('rating').value) || 1;
         const mode = document.querySelector('input[name="sensitivity"]:checked').value;
         
-        // 2. CALCULATE THERMAL FACTOR (Physics Model)
-        // If load is < 20% of rating, thermal ageing is negligible (Life extension factor > 1.0)
-        // If load is > 80%, thermal ageing accelerates.
+        // 2. THERMAL FACTOR
         let utilization = load / rating;
         let f_thermal = 1.0; 
-        
         if (utilization < 0.20) {
-            f_thermal = 1.3; // Low load extension (like your 110VDC cable)
+            f_thermal = 1.3; // Low load extension
         } else if (utilization > 0.80) {
             f_thermal = 0.8; // High load penalty
-        } else {
-            f_thermal = 1.0; // Normal
         }
 
-        // 3. GET DEGRADATION FACTORS (Based on Mode)
-        // [Conservative Value, Optimistic Value]
+        // 3. DEFINE FACTORS [Conservative, Optimistic]
         const factors = {
-            moisture: {
-                dry: [1.0, 1.0],
-                normal: [0.90, 0.95],
-                wet: [0.60, 0.75]
+            // Existing
+            moisture: { dry: [1.0, 1.0], normal: [0.90, 0.95], wet: [0.60, 0.75] },
+            pd: { none: [1.0, 1.0], suspected: [0.80, 0.90], active: [0.20, 0.30] },
+            acc: { good: [1.0, 1.0], aged: [0.80, 0.90], defective: [0.50, 0.60] },
+            
+            // New O&G Factors
+            chemical: { 
+                none: [1.0, 1.0], 
+                splash: [0.85, 0.90], // Slight penalty for surface contact
+                immersion: [0.50, 0.70] // Heavy penalty for swelling/softening
             },
-            pd: {
-                none: [1.0, 1.0],
-                suspected: [0.80, 0.90],
-                active: [0.20, 0.30]
+            uv: { 
+                shaded: [1.0, 1.0], 
+                exposed_res: [0.90, 0.95], // Resistant still ages slowly
+                exposed_std: [0.60, 0.80] // Standard jacket fails fast in UV
             },
-            mech: {
-                protected: [1.0, 1.0],
-                buried: [0.90, 0.95],
-                exposed: [0.70, 0.80]
-            },
-            acc: {
-                good: [1.0, 1.0],
-                aged: [0.80, 0.90],
-                defective: [0.50, 0.60]
+            grid: { 
+                stable: [1.0, 1.0], 
+                frequent: [0.85, 0.90] // Thermal shock penalty
             }
         };
 
         let modeIndex = (mode === 'conservative') ? 0 : 1;
 
+        // Get Values
         let p_moist = factors.moisture[document.getElementById('moisture').value][modeIndex];
         let p_pd = factors.pd[document.getElementById('pd').value][modeIndex];
-        let p_mech = factors.mech[document.getElementById('mech').value][modeIndex];
         let p_acc = factors.acc[document.getElementById('acc').value][modeIndex];
+        
+        let p_chem = factors.chemical[document.getElementById('chemical').value][modeIndex];
+        let p_uv = factors.uv[document.getElementById('uv').value][modeIndex];
+        let p_grid = factors.grid[document.getElementById('grid').value][modeIndex];
 
         // 4. MASTER CALCULATION
-        // Total Estimated Life = Design Life * Thermal * (Product of Penalties)
-        let totalLife = designLife * f_thermal * (p_moist * p_pd * p_mech * p_acc);
+        // All penalties are multiplicative
+        let combinedPenalty = p_moist * p_pd * p_acc * p_chem * p_uv * p_grid;
         
-        // Cap Total Life reasonably (e.g., max 2x Design Life)
+        let totalLife = designLife * f_thermal * combinedPenalty;
+        
+        // Cap Total Life reasonably
         if (totalLife > designLife * 2) totalLife = designLife * 2;
 
         let remaining = totalLife - age;
@@ -352,21 +372,21 @@
         if (remaining > 15) {
             badge.style.backgroundColor = "var(--success)";
             badge.innerText = "Healthy / Low Risk";
-            rec.innerText = "Asset is in good condition. Continue routine monitoring.";
+            badge.style.color = "white";
+            rec.innerText = "Asset condition is robust. Continue routine monitoring.";
         } else if (remaining > 5) {
             badge.style.backgroundColor = "var(--warning)";
             badge.innerText = "Warning / Plan Replacement";
             badge.style.color = "#333";
-            rec.innerText = "Asset is approaching end of life. Schedule Tier 1 diagnostics (VLF Tan Delta) to refine estimate.";
+            rec.innerText = "Approaching end of life. Schedule VLF Tan Delta testing to verify insulation integrity.";
         } else {
             badge.style.backgroundColor = "var(--danger)";
             badge.innerText = "Critical / Replace Soon";
             badge.style.color = "white";
-            rec.innerText = "Immediate attention required. High risk of failure.";
+            rec.innerText = "High risk of failure. Prioritize replacement or detailed Tier 1 diagnostics immediately.";
         }
 
         // Update Charts
-        // We normalize to Total Life to show percentages
         let totalForBar = Math.max(age + remaining, totalLife);
         let pctAge = (age / totalForBar) * 100;
         let pctRem = (remaining / totalForBar) * 100;
