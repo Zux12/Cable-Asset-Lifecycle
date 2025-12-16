@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cable Lifecycle Calculator | O&G Diamond Edition (v8.0)</title>
+    <title>Cable Lifecycle Calculator | O&G Titanium Edition (v9.0)</title>
     <style>
         :root {
-            --primary-color: #002e5d; /* Deep Offshore Blue */
-            --accent-color: #e63946;  /* Safety Red */
-            --bg-color: #f1f3f5;
+            --primary-color: #001f3f; /* Night Blue */
+            --accent-color: #ff4136;  /* Emergency Red */
+            --bg-color: #f4f4f4;
             --card-bg: #ffffff;
-            --text-main: #212529;
-            --border-color: #ced4da;
-            --success: #2a9d8f;
-            --warning: #e9c46a;
-            --danger: #d90429;
+            --text-main: #111111;
+            --border-color: #dddddd;
+            --success: #2ecc40;
+            --warning: #ff851b;
+            --danger: #ff4136;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
@@ -27,12 +27,12 @@
         }
 
         .container {
-            max-width: 1280px;
+            max-width: 1300px;
             margin: 0 auto;
             background: var(--card-bg);
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+            padding: 45px;
+            border-radius: 12px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.1);
             border: 1px solid var(--border-color);
         }
 
@@ -42,50 +42,51 @@
             border-bottom: 5px solid var(--primary-color);
             padding-bottom: 15px;
             margin-top: 0;
-            font-size: 2.2rem;
+            font-size: 2.4rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
+            font-weight: 900;
         }
 
         .standards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 12px;
+            margin-bottom: 35px;
         }
 
         .std-badge {
-            background: #e9ecef;
-            color: #495057;
+            background: #eef2f5;
+            color: #333;
             padding: 8px;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: 0.7rem;
             font-weight: 700;
-            border: 1px solid #dee2e6;
+            border: 1px solid #ced4da;
             text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
         
         .std-badge.critical {
             border-color: var(--accent-color);
             color: #a71e34;
-            background: #fde8ea;
+            background: #fff5f5;
         }
 
         /* SECTIONS */
         h2 {
             font-size: 1.1rem;
             color: #fff;
-            background: linear-gradient(90deg, #002e5d 0%, #004e92 100%);
-            padding: 12px 20px;
-            border-radius: 6px;
-            margin-top: 40px;
+            background: linear-gradient(90deg, #001f3f 0%, #003366 100%);
+            padding: 12px 25px;
+            border-radius: 4px;
+            margin-top: 45px;
             margin-bottom: 25px;
             display: flex;
             align-items: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -94,24 +95,24 @@
         .input-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
+            gap: 30px;
         }
 
         .form-group { margin-bottom: 5px; }
 
         label {
             display: block;
-            font-weight: 700;
+            font-weight: 800;
             margin-bottom: 8px;
             font-size: 0.9rem;
-            color: #343a40;
+            color: #222;
         }
 
         select, input[type="number"], input[type="range"] {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ced4da;
-            border-radius: 6px;
+            padding: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
             font-size: 1rem;
             background-color: #fff;
             box-sizing: border-box;
@@ -121,91 +122,95 @@
         select:focus, input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 46, 93, 0.15);
+            box-shadow: 0 0 0 3px rgba(0, 31, 63, 0.2);
         }
 
         .helper-text {
             font-size: 0.75rem;
-            color: #6c757d;
-            margin-top: 5px;
+            color: #666;
+            margin-top: 6px;
             display: block;
+            font-style: italic;
         }
 
         /* RESULTS AREA */
         .result-panel {
-            background: #fff;
-            border: 2px solid #e9ecef;
-            padding: 40px;
-            margin-top: 50px;
-            border-radius: 12px;
+            background: #ffffff;
+            border: 2px solid #eaeaea;
+            padding: 50px;
+            margin-top: 60px;
+            border-radius: 8px;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+            position: relative;
         }
 
         .rul-display {
-            font-size: 5rem;
+            font-size: 5.5rem;
             font-weight: 800;
             color: var(--primary-color);
             line-height: 1;
-            margin: 15px 0;
+            margin: 20px 0;
         }
 
         .status-badge {
             display: inline-block;
-            padding: 10px 35px;
+            padding: 12px 40px;
             border-radius: 50px;
             color: white;
             font-weight: 700;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         /* CHARTS */
         .breakdown-bar {
-            height: 40px;
+            height: 45px;
             width: 100%;
-            background-color: #e9ecef;
-            border-radius: 20px;
+            background-color: #e2e2e2;
+            border-radius: 25px;
             overflow: hidden;
             display: flex;
-            margin-top: 35px;
+            margin-top: 40px;
+            border: 1px solid #ccc;
         }
 
-        .bar-segment { height: 100%; transition: width 0.8s ease-in-out; }
+        .bar-segment { height: 100%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
 
         .legend {
             display: flex;
             justify-content: center;
-            gap: 25px;
-            font-size: 0.9rem;
-            margin-top: 20px;
-            color: #555;
+            gap: 30px;
+            font-size: 0.95rem;
+            margin-top: 25px;
+            color: #444;
             font-weight: 600;
         }
         
-        .dot { height: 12px; width: 12px; display: inline-block; margin-right: 8px; border-radius: 3px;}
+        .dot { height: 14px; width: 14px; display: inline-block; margin-right: 10px; border-radius: 3px; vertical-align: middle;}
 
         /* TOGGLE */
         .mode-wrapper {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 8px;
+            background: #e8f0fe;
+            padding: 18px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
-            gap: 20px;
-            border: 1px solid #bbdefb;
-            margin-bottom: 25px;
-            color: #0d47a1;
+            gap: 25px;
+            border: 1px solid #d2e3fc;
+            margin-bottom: 30px;
+            color: #155724;
         }
-        .mode-wrapper label { margin: 0; cursor: pointer; display: flex; align-items: center;}
-        .mode-wrapper input { width: auto; margin-right: 8px; }
+        .mode-wrapper label { margin: 0; cursor: pointer; display: flex; align-items: center; font-weight: 700;}
+        .mode-wrapper input { width: auto; margin-right: 10px; transform: scale(1.2); }
 
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Cable Lifecycle Calculator v8.0</h1>
+    <h1>Cable Lifecycle Calculator v9.0</h1>
     
     <div class="standards-grid">
         <div class="std-badge">IEC 60216 (Thermal)</div>
@@ -214,17 +219,20 @@
         <div class="std-badge">IEC 60949 (Faults)</div>
         <div class="std-badge">ISA 71.04 (H2S)</div>
         <div class="std-badge">CIGRE 852 (DC)</div>
-        <div class="std-badge critical">IEC 62305 (Lightning)</div>
+        <div class="std-badge critical">IEC 60079 (Ex-Safe)</div>
         <div class="std-badge">NACE SP0169 (Galvanic)</div>
         <div class="std-badge">IEEE 1425 (Wet/Dry)</div>
-        <div class="std-badge critical">API 540 (Process Heat)</div>
+        <div class="std-badge critical">API 540 (Heat)</div>
+        <div class="std-badge critical">IEC 60068 (UV)</div>
+        <div class="std-badge">ISO 55000 (Maint)</div>
         <div class="std-badge">IEC 60502 (Bending)</div>
-        <div class="std-badge critical">IEEE 1100 (Kickback)</div>
+        <div class="std-badge">IEEE 1100 (Kickback)</div>
+        <div class="std-badge">IEC 62305 (Lightning)</div>
     </div>
 
     <div class="mode-wrapper">
-        <strong>Risk Strategy:</strong>
-        <label><input type="radio" name="mode" value="conservative" onchange="calculate()"> Conservative (Risk Averse)</label>
+        <strong>Simulation Strategy:</strong>
+        <label><input type="radio" name="mode" value="conservative" onchange="calculate()"> Conservative (Safety Critical)</label>
         <label><input type="radio" name="mode" value="optimistic" checked onchange="calculate()"> Optimistic (Planning Base)</label>
     </div>
 
@@ -300,7 +308,6 @@
                     <option value="near">Near Steam/Process Pipe (< 2m)</option>
                     <option value="contact">Contact/High Radiation</option>
                 </select>
-                <span class="helper-text">External heat sources accelerate aging.</span>
             </div>
             <div class="form-group">
                 <label>Installation Bends (IEC 60502)</label>
@@ -308,7 +315,6 @@
                     <option value="good">Standard Radius (>12xD)</option>
                     <option value="tight">Tight Bends (Stress/Crazing)</option>
                 </select>
-                <span class="helper-text">Tight bends degrade insulation and screens.</span>
             </div>
             <div class="form-group">
                 <label>Soil Thermal Resistivity</label>
@@ -319,17 +325,25 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>Atmosphere (ISA 71.04)</label>
-                <select id="atmosphere" onchange="calculate()">
-                    <option value="clean">G1 Clean</option>
-                    <option value="industrial">G2 Industrial</option>
-                    <option value="harsh">G3 Harsh (H2S)</option>
+                <label>Solar / UV Radiation (IEC 60068)</label>
+                <select id="uv" onchange="calculate()">
+                    <option value="shaded">Shaded / Buried</option>
+                    <option value="exposed">Exposed (Tropical Sun)</option>
                 </select>
+                <span class="helper-text">UV embrittles jackets causing cracks.</span>
             </div>
         </div>
 
-        <h2>4. Physical Integrity & Armour</h2>
+        <h2>4. Physical Integrity & Safety</h2>
         <div class="input-grid">
+            <div class="form-group">
+                <label>Hazardous Area (Ex) Integrity</label>
+                <select id="ex_integrity" onchange="calculate()">
+                    <option value="good">Tight / No Cold Flow</option>
+                    <option value="loose">Loose Gland / Cold Flow</option>
+                </select>
+                <span class="helper-text">IEC 60079: Loose gland kills Ex rating.</span>
+            </div>
             <div class="form-group">
                 <label>Armour Type</label>
                 <select id="armour" onchange="calculate()">
@@ -345,23 +359,24 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>Galvanic Corrosion (NACE)</label>
-                <select id="galvanic" onchange="calculate()">
-                    <option value="isolated">Isolated / Compatible</option>
-                    <option value="active">Active (Armour Rot)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Joints/Splices (CIGRE 279)</label>
-                <select id="joints" onchange="calculate()">
-                    <option value="continuous">Continuous Run</option>
-                    <option value="spliced">Underground Joints</option>
+                <label>Maintenance Strategy (ISO 55000)</label>
+                <select id="maintenance" onchange="calculate()">
+                    <option value="preventive">Preventive (Regular Inspection)</option>
+                    <option value="run_fail">Run-to-Failure (Reactive)</option>
                 </select>
             </div>
         </div>
         
         <h2>5. O&G Aggressors</h2>
         <div class="input-grid">
+            <div class="form-group">
+                <label>Atmosphere (ISA 71.04)</label>
+                <select id="atmosphere" onchange="calculate()">
+                    <option value="clean">G1 Clean</option>
+                    <option value="industrial">G2 Industrial</option>
+                    <option value="harsh">G3 Harsh (H2S)</option>
+                </select>
+            </div>
             <div class="form-group">
                 <label>Chemical/Oil Exposure</label>
                 <select id="chemical" onchange="calculate()">
@@ -378,11 +393,10 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>Vibration (Fatigue)</label>
-                <select id="vibration" onchange="calculate()">
-                    <option value="none">Static</option>
-                    <option value="moderate">Moderate</option>
-                    <option value="high">High (Machinery)</option>
+                <label>Galvanic Corrosion (NACE)</label>
+                <select id="galvanic" onchange="calculate()">
+                    <option value="isolated">Isolated / Compatible</option>
+                    <option value="active">Active (Armour Rot)</option>
                 </select>
             </div>
         </div>
@@ -430,19 +444,19 @@
         <div id="rulValue" class="rul-display">-- Years</div>
         <div id="statusBadge" class="status-badge">Processing</div>
         
-        <div style="margin-top: 35px;">
+        <div style="margin-top: 40px;">
             <div class="breakdown-bar">
                 <div id="bar-age" class="bar-segment" style="background:#888;"></div>
                 <div id="bar-pen" class="bar-segment" style="background:#dc3545;"></div>
-                <div id="bar-rem" class="bar-segment" style="background:#2a9d8f;"></div>
+                <div id="bar-rem" class="bar-segment" style="background:#2ecc40;"></div>
             </div>
             <div class="legend">
                 <span><span class="dot" style="background:#888;"></span>Age Consumed</span>
                 <span><span class="dot" style="background:#dc3545;"></span>Total Derating</span>
-                <span><span class="dot" style="background:#2a9d8f;"></span>Remaining Life</span>
+                <span><span class="dot" style="background:#2ecc40;"></span>Remaining Life</span>
             </div>
         </div>
-        <p id="recText" style="margin-top:30px; font-weight:500; color:#555; max-width:900px; margin-left:auto; margin-right:auto; font-size:1.1rem;"></p>
+        <p id="recText" style="margin-top:35px; font-weight:500; color:#444; max-width:900px; margin-left:auto; margin-right:auto; font-size:1.1rem; line-height:1.6;"></p>
     </div>
 </div>
 
@@ -476,27 +490,28 @@
 
         // --- PENALTY FACTORS ---
         const factors = {
-            // Electrical Stress
+            // Electrical
             surge: { protected: [1.0, 1.0], unprotected: [0.75, 0.85] },
             lightning: { low: [1.0, 1.0], medium: [0.90, 0.95], high: [0.75, 0.85] },
             faults: { clean: [1.0, 1.0], few: [0.90, 0.95], frequent: [0.70, 0.80] },
             
-            // Thermal & Installation (NEW)
-            process_heat: { none: [1.0, 1.0], near: [0.60, 0.70], contact: [0.40, 0.50] }, // API 540
-            bends: { good: [1.0, 1.0], tight: [0.70, 0.80] }, // IEC 60502
+            // Thermal/Install
+            process_heat: { none: [1.0, 1.0], near: [0.60, 0.70], contact: [0.40, 0.50] },
+            bends: { good: [1.0, 1.0], tight: [0.70, 0.80] },
             soil_rho: { wet: [1.05, 1.05], normal: [1.0, 1.0], dry: [0.80, 0.90] },
+            uv: { shaded: [1.0, 1.0], exposed: [0.60, 0.75] }, // New UV Factor
+
+            // Safety & Integrity
+            ex_integrity: { good: [1.0, 1.0], loose: [0.50, 0.60] }, // Ex Cold Flow
+            armour: { swa: [1.0, 1.0], none: [0.70, 0.80] },
+            sheath: { intact: [1.0, 1.0], damaged: [0.50, 0.60] },
+            maintenance: { preventive: [1.05, 1.10], run_fail: [0.90, 0.95] }, // Stewardship Bonus
 
             // Environment
             atm: { clean: [1.0, 1.0], industrial: [0.90, 0.95], harsh: [0.70, 0.80] },
             chem: { none: [1.0, 1.0], splash: [0.85, 0.90], immersion: [0.50, 0.70] },
             wet_dry: { stable: [1.0, 1.0], cyclic: [0.80, 0.90] },
-            vib: { none: [1.0, 1.0], moderate: [0.85, 0.90], high: [0.60, 0.70] },
-            
-            // Physical
-            armour: { swa: [1.0, 1.0], none: [0.70, 0.80] },
-            sheath: { intact: [1.0, 1.0], damaged: [0.50, 0.60] },
             galvanic: { isolated: [1.0, 1.0], active: [0.85, 0.90] },
-            joints: { continuous: [1.0, 1.0], spliced: [0.70, 0.80] },
             
             // Diagnostics
             visual: { good: [1.0, 1.0], minor: [0.85, 0.90], poor: [0.50, 0.60] },
@@ -511,17 +526,18 @@
         
         const p_heat = factors.process_heat[document.getElementById('process_heat').value][idx];
         const p_bends = factors.bends[document.getElementById('bends').value][idx];
-        const p_soil = factors.soil_rho[document.getElementById('soil_rho').value][idx]; // Multiplier method updated
-        
+        const p_soil = factors.soil_rho[document.getElementById('soil_rho').value][idx]; 
+        const p_uv = factors.uv[document.getElementById('uv').value][idx];
+
+        const p_ex = factors.ex_integrity[document.getElementById('ex_integrity').value][idx];
+        const p_armour = factors.armour[document.getElementById('armour').value][idx];
+        const p_sheath = factors.sheath[document.getElementById('sheath').value][idx];
+        const p_maint = factors.maintenance[document.getElementById('maintenance').value][idx];
+
         const p_atm = factors.atm[document.getElementById('atmosphere').value][idx];
         const p_chem = factors.chem[document.getElementById('chemical').value][idx];
         const p_wetdry = factors.wet_dry[document.getElementById('wet_dry').value][idx];
-        const p_vib = factors.vib[document.getElementById('vibration').value][idx];
-        
-        const p_armour = factors.armour[document.getElementById('armour').value][idx];
-        const p_sheath = factors.sheath[document.getElementById('sheath').value][idx];
         const p_galvanic = factors.galvanic[document.getElementById('galvanic').value][idx];
-        const p_joints = factors.joints[document.getElementById('joints').value][idx];
         
         const p_visual = factors.visual[document.getElementById('visual').value][idx];
         const p_td = factors.td[document.getElementById('test_td').value][idx];
@@ -530,8 +546,7 @@
 
         // --- MASTER CALCULATION ---
         let totalLife = designLife * f_thermal * p_dc * (
-            p_surge * p_lightning * p_faults * p_heat * p_bends * p_soil *
-            p_atm * p_chem * p_wetdry * p_vib * p_armour * p_sheath * p_galvanic * p_joints * p_visual * p_td * p_pd * p_ir
+            p_surge * p_lightning * p_faults * p_heat * p_bends * p_soil * p_uv * p_ex * p_armour * p_sheath * p_maint * p_atm * p_chem * p_wetdry * p_galvanic * p_visual * p_td * p_pd * p_ir
         );
 
         if (totalLife > designLife * 1.6) totalLife = designLife * 1.6;
@@ -548,15 +563,15 @@
         if (remaining > 12) {
             badge.innerText = "Healthy / Low Risk";
             badge.style.backgroundColor = "var(--success)";
-            rec.innerText = "Asset condition is Excellent. Combined stress factors are low. Continue routine visual inspections.";
+            rec.innerText = "Asset Condition: EXCELLENT. \nThe combination of good maintenance, robust protection, and safe environment indicates a long service life ahead. \nAction: Continue routine ISO 55000 compliant inspections.";
         } else if (remaining > 5) {
             badge.innerText = "Warning / Monitor";
             badge.style.backgroundColor = "var(--warning)";
-            rec.innerText = "Asset is Degrading. The cumulative effect of Environment, Installation, or Load is visible. Schedule VLF Tan Delta diagnostics to confirm insulation health.";
+            rec.innerText = "Asset Condition: AGING. \nEnvironmental or Operational stress is visible. The safety margin is reducing. \nAction: Schedule VLF Tan Delta diagnostics and verify Hazardous Area (Ex) gland tightness during next shutdown.";
         } else {
             badge.innerText = "Critical / Replace";
             badge.style.backgroundColor = "var(--danger)";
-            rec.innerText = "End of Reliable Life. Probability of failure is High due to Heat, Moisture, or Electrical Stress. Prioritize immediate replacement.";
+            rec.innerText = "Asset Condition: END OF RELIABLE LIFE. \nStatistical probability of failure is HIGH. Continued operation may compromise Process Safety or Ex-Ratings. \nAction: Prioritize for immediate replacement.";
         }
 
         let totalDisplay = Math.max(age + remaining, totalLife);
