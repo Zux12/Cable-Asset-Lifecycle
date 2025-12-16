@@ -203,8 +203,8 @@
         <span class="std-badge">ISA 71.04 (H2S)</span>
         <span class="std-badge">CIGRE 852 (DC)</span>
         <span class="std-badge">IEEE 1100 (Kickback)</span>
-        <span class="std-badge">NACE SP0169 (Galvanic)</span>
-        <span class="std-badge" style="border-color:#d90429; color:#b30000;">IEEE 1425 (Wet/Dry)</span>
+        <span class="std-badge">IEC 62305 (Lightning)</span>
+        <span class="std-badge" style="border-color:#d90429; color:#b30000;">IEC 60229 (Sheath)</span>
     </div>
 
     <div class="mode-wrapper">
@@ -243,19 +243,28 @@
             </div>
         </div>
 
-        <h2>2. Thermal Physics & Loading</h2>
+        <h2>2. Electrical Stress (Internal/External)</h2>
         <div class="input-grid">
             <div class="form-group">
                 <label>Avg Load Utilization (%)</label>
                 <input type="number" id="utilization" value="10" oninput="calculate()">
             </div>
             <div class="form-group">
-                <label>Inductive Kickback (IEEE 1100)</label>
+                <label>Internal Surge (Solenoid Kickback)</label>
                 <select id="surge" onchange="calculate()">
                     <option value="protected">Protected (Diode/Suppressor)</option>
                     <option value="unprotected">Unprotected (Voltage Spikes)</option>
                 </select>
-                <span class="helper-text">Crucial for Solenoid/Coil circuits.</span>
+                <span class="helper-text">IEEE 1100: Inductive switching spikes.</span>
+            </div>
+            <div class="form-group">
+                <label>External Surge (Lightning - IEC 62305)</label>
+                <select id="lightning" onchange="calculate()">
+                    <option value="low">Low (Shielded/Indoor)</option>
+                    <option value="medium">Medium (Buried/Outdoor)</option>
+                    <option value="high">High (Exposed/Tropics)</option>
+                </select>
+                <span class="helper-text">Induced surges from ground potential rise.</span>
             </div>
             <div class="form-group">
                 <label>Fault History (IEC 60949)</label>
@@ -286,6 +295,14 @@
                 </select>
             </div>
             <div class="form-group">
+                <label>Wet/Dry Cycles (IEEE 1425)</label>
+                <select id="wet_dry" onchange="calculate()">
+                    <option value="stable">Stable (Deep Burial)</option>
+                    <option value="cyclic">Cyclic (Monsoon/Dry Season)</option>
+                </select>
+                <span class="helper-text">'Pumping' effect sucks moisture in.</span>
+            </div>
+            <div class="form-group">
                 <label>Vibration (Fatigue)</label>
                 <select id="vibration" onchange="calculate()">
                     <option value="none">Static</option>
@@ -305,12 +322,20 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>Visual Condition (API 14F)</label>
-                <select id="visual" onchange="calculate()">
-                    <option value="good">Good / Intact</option>
-                    <option value="minor">Minor Aging</option>
-                    <option value="poor">Poor (Cracked/Corroded)</option>
+                <label>Sheath Condition (IEC 60229)</label>
+                <select id="sheath" onchange="calculate()">
+                    <option value="intact">Intact / Passes Test</option>
+                    <option value="damaged">Damaged / Pinholes</option>
                 </select>
+                <span class="helper-text">Breach allows armour corrosion.</span>
+            </div>
+            <div class="form-group">
+                <label>Galvanic Corrosion (NACE)</label>
+                <select id="galvanic" onchange="calculate()">
+                    <option value="isolated">Isolated / Compatible</option>
+                    <option value="active">Active (Armour Rot)</option>
+                </select>
+                <span class="helper-text">Zinc/Copper battery effect.</span>
             </div>
             <div class="form-group">
                 <label>Joints/Splices (CIGRE 279)</label>
@@ -321,27 +346,7 @@
             </div>
         </div>
 
-        <h2>5. Advanced Stress Factors (New)</h2>
-        <div class="input-grid">
-            <div class="form-group">
-                <label>Wet/Dry Cycling (IEEE 1425)</label>
-                <select id="wet_dry" onchange="calculate()">
-                    <option value="stable">Stable Moisture (Deep Burial)</option>
-                    <option value="cyclic">Cyclic (Monsoon/Dry Season)</option>
-                </select>
-                <span class="helper-text">Accelerates water tree growth via 'pumping'.</span>
-            </div>
-            <div class="form-group">
-                <label>Galvanic Corrosion (NACE)</label>
-                <select id="galvanic" onchange="calculate()">
-                    <option value="isolated">Isolated / Compatible Earth</option>
-                    <option value="active">Active (Mixed Metals/Wet Soil)</option>
-                </select>
-                <span class="helper-text">Zinc/Copper battery effect rots armour.</span>
-            </div>
-        </div>
-
-        <h2>6. Diagnostics (Measured Data)</h2>
+        <h2>5. Diagnostics (Measured Data)</h2>
         <div class="input-grid">
             <div class="form-group">
                 <label>VLF Tan Delta (IEEE 400.2)</label>
@@ -349,6 +354,14 @@
                     <option value="pass">Pass / No Data</option>
                     <option value="aging">Aging (Tip-Up > 5)</option>
                     <option value="fail">Action Required</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Visual Inspection (API 14F)</label>
+                <select id="visual" onchange="calculate()">
+                    <option value="good">Good / Intact</option>
+                    <option value="minor">Minor Aging</option>
+                    <option value="poor">Poor (Cracked/Corroded)</option>
                 </select>
             </div>
             <div class="form-group">
@@ -422,47 +435,53 @@
 
         // --- PENALTY FACTORS ---
         const factors = {
+            // Electrical Stress
             surge: { protected: [1.0, 1.0], unprotected: [0.75, 0.85] },
+            lightning: { low: [1.0, 1.0], medium: [0.90, 0.95], high: [0.75, 0.85] },
             faults: { clean: [1.0, 1.0], few: [0.90, 0.95], frequent: [0.70, 0.80] },
             
+            // Environment
             atm: { clean: [1.0, 1.0], industrial: [0.90, 0.95], harsh: [0.70, 0.80] },
             chem: { none: [1.0, 1.0], splash: [0.85, 0.90], immersion: [0.50, 0.70] },
+            wet_dry: { stable: [1.0, 1.0], cyclic: [0.80, 0.90] },
             vib: { none: [1.0, 1.0], moderate: [0.85, 0.90], high: [0.60, 0.70] },
             
+            // Physical
             armour: { swa: [1.0, 1.0], none: [0.70, 0.80] },
-            visual: { good: [1.0, 1.0], minor: [0.85, 0.90], poor: [0.50, 0.60] },
+            sheath: { intact: [1.0, 1.0], damaged: [0.50, 0.60] },
+            galvanic: { isolated: [1.0, 1.0], active: [0.85, 0.90] },
             joints: { continuous: [1.0, 1.0], spliced: [0.70, 0.80] },
             
-            // New Factors
-            wet_dry: { stable: [1.0, 1.0], cyclic: [0.80, 0.90] }, // Cyclic Pumping Penalty
-            galvanic: { isolated: [1.0, 1.0], active: [0.85, 0.90] }, // Armour Corrosion Penalty
-            
+            // Diagnostics
+            visual: { good: [1.0, 1.0], minor: [0.85, 0.90], poor: [0.50, 0.60] },
             td: { pass: [1.0, 1.0], aging: [0.75, 0.85], fail: [0.40, 0.50] },
             pd: { none: [1.0, 1.0], low: [0.80, 0.90], high: [0.20, 0.30] },
             ir: { good: [1.0, 1.0], low: [0.70, 0.80], crit: [0.10, 0.20] }
         };
 
         const p_surge = factors.surge[document.getElementById('surge').value][idx];
+        const p_lightning = factors.lightning[document.getElementById('lightning').value][idx];
         const p_faults = factors.faults[document.getElementById('faults').value][idx];
         
         const p_atm = factors.atm[document.getElementById('atmosphere').value][idx];
         const p_chem = factors.chem[document.getElementById('chemical').value][idx];
+        const p_wetdry = factors.wet_dry[document.getElementById('wet_dry').value][idx];
         const p_vib = factors.vib[document.getElementById('vibration').value][idx];
         
         const p_armour = factors.armour[document.getElementById('armour').value][idx];
-        const p_visual = factors.visual[document.getElementById('visual').value][idx];
+        const p_sheath = factors.sheath[document.getElementById('sheath').value][idx];
+        const p_galvanic = factors.galvanic[document.getElementById('galvanic').value][idx];
         const p_joints = factors.joints[document.getElementById('joints').value][idx];
         
-        const p_wetdry = factors.wet_dry[document.getElementById('wet_dry').value][idx];
-        const p_galvanic = factors.galvanic[document.getElementById('galvanic').value][idx];
-        
+        const p_visual = factors.visual[document.getElementById('visual').value][idx];
         const p_td = factors.td[document.getElementById('test_td').value][idx];
         const p_pd = factors.pd[document.getElementById('test_pd').value][idx];
         const p_ir = factors.ir[document.getElementById('test_ir').value][idx];
 
         // --- MASTER CALCULATION ---
-        // Includes: Thermal * DC * Electrical * Environmental * Physical * Advanced * Diagnostic
-        let totalLife = designLife * f_thermal * p_dc * (p_surge * p_faults * p_atm * p_chem * p_vib * p_armour * p_visual * p_joints * p_wetdry * p_galvanic * p_td * p_pd * p_ir);
+        let totalLife = designLife * f_thermal * p_dc * (
+            p_surge * p_lightning * p_faults * p_atm * p_chem * p_wetdry * p_vib * p_armour * p_sheath * p_galvanic * p_joints * p_visual * p_td * p_pd * p_ir
+        );
 
         if (totalLife > designLife * 1.6) totalLife = designLife * 1.6;
 
