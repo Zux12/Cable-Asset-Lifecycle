@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cable Lifecycle Calculator | O&G Summit Edition (v10.0)</title>
+    <title>Cable Lifecycle Calculator | O&G Summit Edition (v10.1)</title>
     <style>
         :root {
             --primary-color: #001219; /* Deepest Black/Blue */
@@ -210,7 +210,7 @@
 <body>
 
 <div class="container">
-    <h1>Cable Lifecycle Calculator v10.0</h1>
+    <h1>Cable Lifecycle Calculator v10.1</h1>
     
     <div class="standards-grid">
         <div class="std-badge">IEC 60216 (Thermal)</div>
@@ -295,6 +295,14 @@
                     <option value="low">Shielded / Low Risk</option>
                     <option value="medium">Medium</option>
                     <option value="high">High / Exposed Tropics</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Fault History (IEC 60949)</label>
+                <select id="faults" onchange="calculate()">
+                    <option value="clean">Clean History</option>
+                    <option value="few">1-2 Faults (Minor Shock)</option>
+                    <option value="frequent">Frequent Faults (Major Shock)</option>
                 </select>
             </div>
         </div>
@@ -490,7 +498,7 @@
         // --- PENALTY FACTORS ---
         const factors = {
             // Electrical & Grouping
-            grouping: { single: [1.0, 1.0], bundled: [0.85, 0.90], packed: [0.70, 0.80] }, // NEW
+            grouping: { single: [1.0, 1.0], bundled: [0.85, 0.90], packed: [0.70, 0.80] }, 
             surge: { protected: [1.0, 1.0], unprotected: [0.75, 0.85] },
             lightning: { low: [1.0, 1.0], medium: [0.90, 0.95], high: [0.75, 0.85] },
             faults: { clean: [1.0, 1.0], few: [0.90, 0.95], frequent: [0.70, 0.80] },
@@ -520,7 +528,7 @@
             ir: { good: [1.0, 1.0], low: [0.70, 0.80], crit: [0.10, 0.20] }
         };
 
-        const p_group = factors.grouping[document.getElementById('grouping').value][idx]; // NEW
+        const p_group = factors.grouping[document.getElementById('grouping').value][idx]; 
         const p_surge = factors.surge[document.getElementById('surge').value][idx];
         const p_lightning = factors.lightning[document.getElementById('lightning').value][idx];
         const p_faults = factors.faults[document.getElementById('faults').value][idx];
