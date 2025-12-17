@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cable Lifecycle Calculator | O&G Summit Edition (v10.1)</title>
+    <title>Cable Lifecycle Calculator | O&G Summit Edition (v11.0)</title>
     <style>
         :root {
-            --primary-color: #001219; /* Deepest Black/Blue */
+            --primary-color: #001219; /* Deep Black-Blue */
             --secondary-color: #005f73;
-            --accent-color: #ae2012;  /* Alert Red */
+            --accent-color: #ae2012;  /* Safety Red */
             --bg-color: #e9ecef;
             --card-bg: #ffffff;
             --text-main: #212529;
@@ -210,7 +210,7 @@
 <body>
 
 <div class="container">
-    <h1>Cable Lifecycle Calculator v10.1</h1>
+    <h1>Cable Lifecycle Calculator v11.0</h1>
     
     <div class="standards-grid">
         <div class="std-badge">IEC 60216 (Thermal)</div>
@@ -228,7 +228,7 @@
         <div class="std-badge">ISO 55000 (Maint)</div>
         <div class="std-badge">IEC 60502 (Bending)</div>
         <div class="std-badge">IEEE 1100 (Kickback)</div>
-        <div class="std-badge">IEC 62305 (Lightning)</div>
+        <div class="std-badge critical">DNV-RP-0360 (Damage)</div>
     </div>
 
     <div class="mode-wrapper">
@@ -352,11 +352,12 @@
                 <span class="helper-text">IEC 60079 Compliance.</span>
             </div>
             <div class="form-group">
-                <label>Armour Type</label>
+                <label>Armour / Pest Protection</label>
                 <select id="armour" onchange="calculate()">
-                    <option value="swa">Armoured (SWA)</option>
-                    <option value="none">Unarmoured (Pest Risk)</option>
+                    <option value="swa">Armoured (SWA) - Secure</option>
+                    <option value="none">Unarmoured (Termite/Rodent Risk)</option>
                 </select>
+                <span class="helper-text">DNV-RP-0360: Unarmoured has 50% higher failure rate.</span>
             </div>
             <div class="form-group">
                 <label>Sheath Condition (IEC 60229)</label>
@@ -511,7 +512,7 @@
 
             // Safety & Integrity
             ex_integrity: { good: [1.0, 1.0], loose: [0.50, 0.60] },
-            armour: { swa: [1.0, 1.0], none: [0.70, 0.80] },
+            armour: { swa: [1.0, 1.0], none: [0.60, 0.70] }, // Adjusted for DNV-RP-0360
             sheath: { intact: [1.0, 1.0], damaged: [0.50, 0.60] },
             maintenance: { preventive: [1.05, 1.10], run_fail: [0.90, 0.95] },
 
